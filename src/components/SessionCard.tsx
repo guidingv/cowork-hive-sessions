@@ -1,5 +1,5 @@
 
-import { Users, Clock, Globe, Lock, Eye, Play, Calendar } from "lucide-react";
+import { Users, Clock, Globe, Lock, Eye, Play, Calendar, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
@@ -16,6 +16,9 @@ interface CoworkingSession {
   visibility: 'public' | 'private' | 'invite-only';
   tags: string[];
   hostApproval: boolean;
+  locationId?: string;
+  locationName?: string;
+  locationAddress?: string;
 }
 
 interface SessionCardProps {
@@ -74,6 +77,17 @@ export const SessionCard = ({ session, onJoin }: SessionCardProps) => {
             {getVisibilityIcon()}
           </div>
         </div>
+
+        {/* Location */}
+        {session.locationName && (
+          <div className="flex items-start gap-2 mb-4 p-3 bg-gray-50 rounded-lg">
+            <MapPin className="w-4 h-4 text-gray-500 mt-0.5 flex-shrink-0" />
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-gray-800">{session.locationName}</p>
+              <p className="text-xs text-gray-600 truncate">{session.locationAddress}</p>
+            </div>
+          </div>
+        )}
 
         {/* Tags */}
         <div className="flex flex-wrap gap-1 mb-4">
