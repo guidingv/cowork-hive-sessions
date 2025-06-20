@@ -1,7 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { Plus, Users, Clock, Globe, Lock, Eye } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Users, Clock, Globe, Lock, Eye } from "lucide-react";
 import { CreateEventModal } from "@/components/CreateEventModal";
 import { SessionCard } from "@/components/SessionCard";
 import { JoinSessionModal } from "@/components/JoinSessionModal";
@@ -193,7 +191,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-green-50">
-      <Header />
+      <Header onStartSession={() => setIsCreateModalOpen(true)} />
       
       <main className="container mx-auto px-6 py-8">
         {/* Hero Section */}
@@ -201,17 +199,9 @@ const Index = () => {
           <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-4">
             coworking.live
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto mb-6">
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
             Find and join live coworking sessions at coffee shops near you
           </p>
-          <Button 
-            onClick={() => setIsCreateModalOpen(true)}
-            size="lg"
-            className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-8 py-3 text-lg"
-          >
-            <Plus className="w-5 h-5 mr-2" />
-            Start a Session
-          </Button>
         </div>
 
         {/* Map Section */}

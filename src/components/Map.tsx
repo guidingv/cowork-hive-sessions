@@ -1,9 +1,8 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { Input } from "@/components/ui/input";
-import { Search, MapPin } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 interface MapLocation {
   id: string;
@@ -131,15 +130,6 @@ export const Map = ({ locations, onLocationSelect }: MapProps) => {
   return (
     <div className="relative w-full h-96">
       <div ref={mapContainer} className="absolute inset-0 rounded-lg shadow-lg" />
-      <div className="absolute top-4 left-4 right-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-          <Input 
-            placeholder="Search locations..." 
-            className="pl-10 bg-white/90 backdrop-blur-sm"
-          />
-        </div>
-      </div>
       <div className="absolute bottom-4 left-4 bg-white/90 backdrop-blur-sm rounded-lg p-3 text-xs">
         <div className="flex items-center gap-2 mb-1">
           <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
