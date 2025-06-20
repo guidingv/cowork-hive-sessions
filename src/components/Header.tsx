@@ -1,0 +1,38 @@
+
+import { Bell, User, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+
+export const Header = () => {
+  return (
+    <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 sticky top-0 z-50">
+      <div className="container mx-auto px-6 py-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-green-600 rounded-lg"></div>
+              <span className="text-xl font-bold text-gray-800">coworking.live</span>
+            </div>
+            
+            <div className="hidden md:flex relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+              <Input 
+                placeholder="Search sessions..." 
+                className="pl-10 w-80"
+              />
+            </div>
+          </div>
+
+          <div className="flex items-center gap-4">
+            <Button variant="ghost" size="sm">
+              <Bell className="w-4 h-4" />
+            </Button>
+            <Button variant="ghost" size="sm">
+              <User className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
