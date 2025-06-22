@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { Users, Clock, Globe, Lock, Eye, ArrowRight, MapPin, Coffee } from "lucide-react";
 import { CreateEventModal } from "@/components/CreateEventModal";
@@ -5,6 +6,7 @@ import { SessionCard } from "@/components/SessionCard";
 import { JoinSessionModal } from "@/components/JoinSessionModal";
 import { Header } from "@/components/Header";
 import { Map } from "@/components/Map";
+import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
 interface CoworkingSession {
@@ -355,6 +357,8 @@ const Index = () => {
           </section>
         )}
       </main>
+
+      <Footer />
 
       <CreateEventModal 
         isOpen={isCreateModalOpen}
