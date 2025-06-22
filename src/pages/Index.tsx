@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from "react";
-import { Users, Clock, Globe, Lock, Eye, ArrowRight, MapPin, Coffee } from "lucide-react";
+import { Users, Clock, Globe, Lock, Eye, ArrowRight, MapPin, Coffee, Filter, Search } from "lucide-react";
 import { CreateEventModal } from "@/components/CreateEventModal";
 import { SessionCard } from "@/components/SessionCard";
 import { JoinSessionModal } from "@/components/JoinSessionModal";
@@ -8,6 +7,8 @@ import { Header } from "@/components/Header";
 import { Map } from "@/components/Map";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 
 interface CoworkingSession {
   id: string;
@@ -44,6 +45,9 @@ const Index = () => {
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [selectedSession, setSelectedSession] = useState<CoworkingSession | null>(null);
   const [isJoinModalOpen, setIsJoinModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedTag, setSelectedTag] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'all' | 'live' | 'upcoming'>('all');
 
   // Mock data for demonstration
   useEffect(() => {
@@ -184,10 +188,23 @@ const Index = () => {
     setSelectedLocationId(locationId);
   };
 
-  // Filter sessions based on selected location
-  const filteredSessions = selectedLocationId 
-    ? sessions.filter(session => session.locationId === selectedLocationId)
-    : sessions;
+  // Get all unique tags
+  const allTags = Array.from(new Set(sessions.flatMap(session => session.tags)));
+
+  // Filter sessions based on all criteria
+  const filteredSessions = sessions.filter(session => {
+    const matchesLocation = !selectedLocationId || session.locationId === selectedLocationId;
+    const matchesSearch = !searchTerm || 
+      session.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      session.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      session.host.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesTag = !selectedTag || session.tags.includes(selectedTag);
+    const matchesView = viewMode === 'all' || 
+      (viewMode === 'live' && session.isLive) ||
+      (viewMode === 'upcoming' && !session.isLive);
+    
+    return matchesLocation && matchesSearch && matchesTag && matchesView;
+  });
 
   const liveSessions = filteredSessions.filter(session => session.isLive);
   const upcomingSessions = filteredSessions.filter(session => !session.isLive);
@@ -197,98 +214,73 @@ const Index = () => {
       <Header onStartSession={() => setIsCreateModalOpen(true)} />
       
       <main className="container mx-auto px-6 py-8">
-        {/* Modern Hero Section */}
-        <section className="relative overflow-hidden py-20 mb-16">
-          {/* Background decorative elements */}
+        {/* Compact Hero Section */}
+        <section className="relative overflow-hidden py-16 mb-12">
           <div className="absolute inset-0 -z-10">
-            <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl"></div>
-            <div className="absolute bottom-20 right-10 w-96 h-96 bg-green-200/30 rounded-full blur-3xl"></div>
-            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl"></div>
+            <div className="absolute top-10 left-10 w-48 h-48 bg-blue-200/20 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-10 right-10 w-64 h-64 bg-green-200/20 rounded-full blur-3xl"></div>
           </div>
           
-          <div className="relative z-10 text-center max-w-5xl mx-auto">
-            {/* Main headline */}
-            <div className="mb-8">
-              <h1 className="text-6xl md:text-7xl font-bold mb-6">
-                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
-                  coworking
-                </span>
-                <span className="text-gray-800">.live</span>
-              </h1>
-              <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
-                Discover live coworking sessions at coffee shops near you. 
-                <br className="hidden md:block" />
-                Connect with focused professionals and boost your productivity.
-              </p>
-            </div>
+          <div className="relative z-10 text-center max-w-4xl mx-auto">
+            <h1 className="text-5xl md:text-6xl font-bold mb-4">
+              <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
+                coworking
+              </span>
+              <span className="text-gray-800">.live</span>
+            </h1>
+            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto mb-8">
+              Join live coworking sessions at coffee shops. Connect with focused professionals and boost your productivity.
+            </p>
 
-            {/* Key features */}
-            <div className="flex flex-wrap justify-center gap-6 mb-12">
-              <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-                <MapPin className="w-5 h-5 text-blue-600" />
-                <span className="text-gray-700 font-medium">Real-time locations</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-                <Users className="w-5 h-5 text-green-600" />
-                <span className="text-gray-700 font-medium">Live sessions</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
-                <Coffee className="w-5 h-5 text-purple-600" />
-                <span className="text-gray-700 font-medium">Coffee shop vibes</span>
-              </div>
-            </div>
-
-            {/* CTA buttons */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-8">
               <Button 
                 onClick={() => setIsCreateModalOpen(true)}
                 size="lg"
-                className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+                className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-6 py-3"
               >
                 Start a Session
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-4 h-4 ml-2" />
               </Button>
               <Button 
                 variant="outline"
                 size="lg"
-                className="px-8 py-4 text-lg font-semibold border-2 border-gray-300 hover:border-gray-400 bg-white/80 backdrop-blur-sm"
-                onClick={() => document.getElementById('live-sessions')?.scrollIntoView({ behavior: 'smooth' })}
+                className="px-6 py-3 border-2 bg-white/80"
+                onClick={() => document.getElementById('sessions')?.scrollIntoView({ behavior: 'smooth' })}
               >
                 Explore Sessions
               </Button>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-lg mx-auto">
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-800 mb-1">{liveSessions.length}</div>
-                <div className="text-sm text-gray-600">Live Now</div>
+                <div className="text-2xl font-bold text-gray-800">{liveSessions.length}</div>
+                <div className="text-xs text-gray-600">Live Now</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-800 mb-1">{locations.length}</div>
-                <div className="text-sm text-gray-600">Locations</div>
+                <div className="text-2xl font-bold text-gray-800">{locations.length}</div>
+                <div className="text-xs text-gray-600">Locations</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-800 mb-1">{sessions.reduce((sum, s) => sum + s.participants, 0)}</div>
-                <div className="text-sm text-gray-600">Active Users</div>
+                <div className="text-2xl font-bold text-gray-800">{sessions.reduce((sum, s) => sum + s.participants, 0)}</div>
+                <div className="text-xs text-gray-600">Active Users</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-gray-800 mb-1">24/7</div>
-                <div className="text-sm text-gray-600">Available</div>
+                <div className="text-2xl font-bold text-gray-800">24/7</div>
+                <div className="text-xs text-gray-600">Available</div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Map Section */}
+        {/* Map Section - Compact */}
         <section className="mb-8">
-          <h2 className="text-2xl font-bold text-gray-800 mb-4">Discover Locations</h2>
+          <h2 className="text-xl font-bold text-gray-800 mb-3">Discover Locations</h2>
           <Map 
             locations={locations} 
             onLocationSelect={handleLocationSelect}
           />
           {selectedLocationId && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
+            <div className="mt-3 p-3 bg-blue-50 rounded-lg">
               <p className="text-sm text-blue-700">
                 Showing sessions for: <span className="font-semibold">
                   {locations.find(l => l.id === selectedLocationId)?.name}
@@ -297,65 +289,176 @@ const Index = () => {
                   onClick={() => setSelectedLocationId(null)}
                   className="ml-2 text-blue-600 underline text-sm"
                 >
-                  Show all locations
+                  Show all
                 </button>
               </p>
             </div>
           )}
         </section>
 
-        {/* Live Sessions */}
-        <section className="mb-12" id="live-sessions">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
-            <h2 className="text-3xl font-bold text-gray-800">Live Now</h2>
-            <span className="bg-red-100 text-red-700 px-3 py-1 rounded-full text-sm font-medium">
-              {liveSessions.length} sessions
-            </span>
-          </div>
-          
-          {liveSessions.length === 0 ? (
-            <div className="text-center py-12 bg-white rounded-2xl shadow-sm border">
-              <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg">
-                {selectedLocationId 
-                  ? "No live sessions at this location. Check other locations or start one!" 
-                  : "No live sessions right now. Be the first to start one!"
-                }
-              </p>
+        {/* Search and Filter Section */}
+        <section className="mb-8" id="sessions">
+          <div className="bg-white rounded-xl shadow-sm border p-6">
+            <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-gray-800">Browse Sessions</h2>
+              
+              {/* View Mode Toggle */}
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('all')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === 'all' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
+                  }`}
+                >
+                  All ({sessions.length})
+                </button>
+                <button
+                  onClick={() => setViewMode('live')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === 'live' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
+                  }`}
+                >
+                  Live ({sessions.filter(s => s.isLive).length})
+                </button>
+                <button
+                  onClick={() => setViewMode('upcoming')}
+                  className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    viewMode === 'upcoming' ? 'bg-white text-gray-900 shadow-sm' : 'text-gray-600'
+                  }`}
+                >
+                  Upcoming ({sessions.filter(s => !s.isLive).length})
+                </button>
+              </div>
             </div>
-          ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {liveSessions.map((session) => (
-                <SessionCard 
-                  key={session.id} 
-                  session={session} 
-                  onJoin={() => handleJoinSession(session.id)}
+
+            {/* Search and Filters */}
+            <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Input 
+                  placeholder="Search sessions, hosts, or descriptions..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10"
                 />
-              ))}
+              </div>
+              
+              <div className="flex items-center gap-2">
+                <Filter className="w-4 h-4 text-gray-500" />
+                <span className="text-sm text-gray-600">Tags:</span>
+                <div className="flex flex-wrap gap-2">
+                  <Badge 
+                    variant={selectedTag === null ? "default" : "secondary"}
+                    className="cursor-pointer"
+                    onClick={() => setSelectedTag(null)}
+                  >
+                    All
+                  </Badge>
+                  {allTags.map(tag => (
+                    <Badge 
+                      key={tag}
+                      variant={selectedTag === tag ? "default" : "secondary"}
+                      className="cursor-pointer"
+                      onClick={() => setSelectedTag(selectedTag === tag ? null : tag)}
+                    >
+                      {tag}
+                    </Badge>
+                  ))}
+                </div>
+              </div>
             </div>
-          )}
+
+            {/* Results Summary */}
+            <div className="text-sm text-gray-600 mb-4">
+              Showing {filteredSessions.length} of {sessions.length} sessions
+              {searchTerm && ` matching "${searchTerm}"`}
+              {selectedTag && ` tagged with "${selectedTag}"`}
+              {selectedLocationId && ` at ${locations.find(l => l.id === selectedLocationId)?.name}`}
+            </div>
+
+            {/* Clear Filters */}
+            {(searchTerm || selectedTag || selectedLocationId) && (
+              <div className="flex gap-2 mb-6">
+                <Button 
+                  variant="outline" 
+                  size="sm"
+                  onClick={() => {
+                    setSearchTerm("");
+                    setSelectedTag(null);
+                    setSelectedLocationId(null);
+                  }}
+                >
+                  Clear all filters
+                </Button>
+              </div>
+            )}
+          </div>
         </section>
 
-        {/* Upcoming Sessions */}
-        {upcomingSessions.length > 0 && (
-          <section>
-            <div className="flex items-center gap-3 mb-6">
-              <Clock className="w-6 h-6 text-blue-600" />
-              <h2 className="text-3xl font-bold text-gray-800">Starting Soon</h2>
+        {/* Sessions Grid */}
+        <section>
+          {filteredSessions.length === 0 ? (
+            <div className="text-center py-16 bg-white rounded-2xl shadow-sm border">
+              <Users className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-semibold text-gray-700 mb-2">No sessions found</h3>
+              <p className="text-gray-500 mb-6">
+                Try adjusting your filters or be the first to start a session!
+              </p>
+              <Button 
+                onClick={() => setIsCreateModalOpen(true)}
+                className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700"
+              >
+                Start a Session
+              </Button>
             </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {upcomingSessions.map((session) => (
-                <SessionCard 
-                  key={session.id} 
-                  session={session} 
-                  onJoin={() => handleJoinSession(session.id)}
-                />
-              ))}
-            </div>
-          </section>
-        )}
+          ) : (
+            <>
+              {/* Live Sessions */}
+              {liveSessions.length > 0 && (
+                <div className="mb-8">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
+                    <h3 className="text-xl font-bold text-gray-800">Live Now</h3>
+                    <span className="bg-red-100 text-red-700 px-2 py-1 rounded-full text-xs font-medium">
+                      {liveSessions.length}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {liveSessions.map((session) => (
+                      <SessionCard 
+                        key={session.id} 
+                        session={session} 
+                        onJoin={() => handleJoinSession(session.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Upcoming Sessions */}
+              {upcomingSessions.length > 0 && (
+                <div>
+                  <div className="flex items-center gap-3 mb-4">
+                    <Clock className="w-5 h-5 text-blue-600" />
+                    <h3 className="text-xl font-bold text-gray-800">Starting Soon</h3>
+                    <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs font-medium">
+                      {upcomingSessions.length}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {upcomingSessions.map((session) => (
+                      <SessionCard 
+                        key={session.id} 
+                        session={session} 
+                        onJoin={() => handleJoinSession(session.id)}
+                      />
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </section>
       </main>
 
       <Footer />
