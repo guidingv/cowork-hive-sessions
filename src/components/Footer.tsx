@@ -1,5 +1,6 @@
 
 import { Coffee } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const Footer = () => {
   return (
@@ -12,9 +13,17 @@ const Footer = () => {
             <span className="font-bold text-gray-800">coworking.live</span>
           </div>
           
-          {/* Copyright */}
-          <div className="text-sm text-gray-600">
-            © 2024 coworking.live. All rights reserved.
+          {/* Footer Links */}
+          <div className="flex gap-6 text-sm text-gray-600">
+            <Link to="/site-notice" className="hover:text-blue-600 transition-colors">
+              Site Notice
+            </Link>
+            <Link to="/privacy" className="hover:text-blue-600 transition-colors">
+              Privacy
+            </Link>
+            <Link to="/terms" className="hover:text-blue-600 transition-colors">
+              Terms
+            </Link>
           </div>
         </div>
       </div>
