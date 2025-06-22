@@ -1,10 +1,11 @@
 import { useState, useEffect } from "react";
-import { Users, Clock, Globe, Lock, Eye } from "lucide-react";
+import { Users, Clock, Globe, Lock, Eye, ArrowRight, MapPin, Coffee } from "lucide-react";
 import { CreateEventModal } from "@/components/CreateEventModal";
 import { SessionCard } from "@/components/SessionCard";
 import { JoinSessionModal } from "@/components/JoinSessionModal";
 import { Header } from "@/components/Header";
 import { Map } from "@/components/Map";
+import { Button } from "@/components/ui/button";
 
 interface CoworkingSession {
   id: string;
@@ -194,15 +195,88 @@ const Index = () => {
       <Header onStartSession={() => setIsCreateModalOpen(true)} />
       
       <main className="container mx-auto px-6 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-green-600 bg-clip-text text-transparent mb-4">
-            coworking.live
-          </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Find and join live coworking sessions at coffee shops near you
-          </p>
-        </div>
+        {/* Modern Hero Section */}
+        <section className="relative overflow-hidden py-20 mb-16">
+          {/* Background decorative elements */}
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute top-20 left-10 w-72 h-72 bg-blue-200/30 rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 right-10 w-96 h-96 bg-green-200/30 rounded-full blur-3xl"></div>
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-purple-200/20 rounded-full blur-3xl"></div>
+          </div>
+          
+          <div className="relative z-10 text-center max-w-5xl mx-auto">
+            {/* Main headline */}
+            <div className="mb-8">
+              <h1 className="text-6xl md:text-7xl font-bold mb-6">
+                <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-green-600 bg-clip-text text-transparent">
+                  coworking
+                </span>
+                <span className="text-gray-800">.live</span>
+              </h1>
+              <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+                Discover live coworking sessions at coffee shops near you. 
+                <br className="hidden md:block" />
+                Connect with focused professionals and boost your productivity.
+              </p>
+            </div>
+
+            {/* Key features */}
+            <div className="flex flex-wrap justify-center gap-6 mb-12">
+              <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+                <MapPin className="w-5 h-5 text-blue-600" />
+                <span className="text-gray-700 font-medium">Real-time locations</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+                <Users className="w-5 h-5 text-green-600" />
+                <span className="text-gray-700 font-medium">Live sessions</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/60 backdrop-blur-sm px-4 py-2 rounded-full border border-white/20">
+                <Coffee className="w-5 h-5 text-purple-600" />
+                <span className="text-gray-700 font-medium">Coffee shop vibes</span>
+              </div>
+            </div>
+
+            {/* CTA buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-12">
+              <Button 
+                onClick={() => setIsCreateModalOpen(true)}
+                size="lg"
+                className="bg-gradient-to-r from-blue-600 to-green-600 hover:from-blue-700 hover:to-green-700 text-white px-8 py-4 text-lg font-semibold shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                Start a Session
+                <ArrowRight className="w-5 h-5 ml-2" />
+              </Button>
+              <Button 
+                variant="outline"
+                size="lg"
+                className="px-8 py-4 text-lg font-semibold border-2 border-gray-300 hover:border-gray-400 bg-white/80 backdrop-blur-sm"
+                onClick={() => document.getElementById('live-sessions')?.scrollIntoView({ behavior: 'smooth' })}
+              >
+                Explore Sessions
+              </Button>
+            </div>
+
+            {/* Stats */}
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 max-w-2xl mx-auto">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-800 mb-1">{liveSessions.length}</div>
+                <div className="text-sm text-gray-600">Live Now</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-800 mb-1">{locations.length}</div>
+                <div className="text-sm text-gray-600">Locations</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-800 mb-1">{sessions.reduce((sum, s) => sum + s.participants, 0)}</div>
+                <div className="text-sm text-gray-600">Active Users</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-gray-800 mb-1">24/7</div>
+                <div className="text-sm text-gray-600">Available</div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* Map Section */}
         <section className="mb-8">
@@ -229,7 +303,7 @@ const Index = () => {
         </section>
 
         {/* Live Sessions */}
-        <section className="mb-12">
+        <section className="mb-12" id="live-sessions">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse"></div>
             <h2 className="text-3xl font-bold text-gray-800">Live Now</h2>
